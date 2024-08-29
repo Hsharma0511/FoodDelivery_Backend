@@ -10,7 +10,7 @@ import jakarta.persistence.Table;
 @Table(name="Customers")
 public class Customers {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE)
     private int customer_id;
     private String customer_name;
     private String  customer_email;

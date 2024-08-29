@@ -10,12 +10,12 @@ import jakarta.persistence.Table;
 @Table(name="Restaurants")
 public class Restaurants {
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.SEQUENCE)
 	private int restaurant_id ;
     private String restaurant_name; 
     private String restaurant_address; 
-    private long restaurant_phone ;
-	public Restaurants(int restaurant_id, String restaurant_name, String restaurant_address, long restaurant_phone) {
+    private String restaurant_phone ;
+	public Restaurants(int restaurant_id, String restaurant_name, String restaurant_address, String restaurant_phone) {
 		super();
 		this.restaurant_id = restaurant_id;
 		this.restaurant_name = restaurant_name;
@@ -45,10 +45,10 @@ public class Restaurants {
 	public void setRestaurant_address(String restaurant_address) {
 		this.restaurant_address = restaurant_address;
 	}
-	public long getRestaurant_phone() {
+	public String getRestaurant_phone() {
 		return restaurant_phone;
 	}
-	public void setRestaurant_phone(long restaurant_phone) {
+	public void setRestaurant_phone(String restaurant_phone) {
 		this.restaurant_phone = restaurant_phone;
 	}
 	@Override
