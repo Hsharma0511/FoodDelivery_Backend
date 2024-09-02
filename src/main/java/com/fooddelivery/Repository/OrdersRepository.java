@@ -7,10 +7,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.fooddelivery.model.Orders;
+import com.fooddelivery.entity.Orders;
 
 @Repository
 public interface OrdersRepository extends JpaRepository<Orders,Integer>{
 	@Query("SELECT o FROM Orders o Where o.customers.customer_id=:customer_id")
 	List<Orders> findOrdersByCustomerId(@Param("customer_id")int customer_id);
+	
+	@Query("SELECT o FROM Orders o Where o.deliveryDrivers.driver_id=:driverId")
+	List<Orders> findOrdersByDriverId(@Param("driverId")int driverId);
 }

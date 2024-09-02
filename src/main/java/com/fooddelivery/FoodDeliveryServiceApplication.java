@@ -5,8 +5,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import com.fooddelivery.model.Customers;
 import com.fooddelivery.service.CustomersService;
+import com.fooddelivery.service.RestaurantsService;
 
 @SpringBootApplication
 public class FoodDeliveryServiceApplication implements CommandLineRunner {
@@ -14,16 +14,17 @@ public class FoodDeliveryServiceApplication implements CommandLineRunner {
 	@Autowired
 	CustomersService cs;
 
+	@Autowired
+	RestaurantsService rs;
+	
 	public static void main(String[] args) {
 		SpringApplication.run(FoodDeliveryServiceApplication.class, args);
 	}
 
 	@Override
 	public void run(String... args) throws Exception {
-		// TODO Auto-generated method stub
-//		Customers c = new Customers(500, "Sumit", "sumit@gmail.com", "3458794574");
-//		
-//		cs.addCustomer(c);
+		
+		System.out.println("Hello Food Delivery Service");
 	}
 
 }

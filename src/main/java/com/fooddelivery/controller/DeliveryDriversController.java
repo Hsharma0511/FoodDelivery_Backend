@@ -14,41 +14,49 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fooddelivery.Exception.DuplicateDriverIDException;
 import com.fooddelivery.Exception.InvalidDriverIDException;
-import com.fooddelivery.Repository.NoSuchDriverIDException;
-import com.fooddelivery.model.DeliveryDrivers;
+import com.fooddelivery.entity.DeliveryDrivers;
+import com.fooddelivery.entity.Orders;
 import com.fooddelivery.service.DeliveryDriversService;
+import com.fooddelivery.service.OrdersService;
 
 @RestController
-@RequestMapping(value="/api/drivers")
+@RequestMapping("/api/drivers")
 public class DeliveryDriversController {
 	@Autowired
 	private DeliveryDriversService deliverydriversService;
-	@GetMapping(consumes = "application/json", produces="application/json")
-	public ResponseEntity<?> getAllDrivers() {
-        try {
-            List<DeliveryDrivers> drivers = deliverydriversService.getAllDeliveryDrivers();
-            return ResponseEntity.ok(drivers);
-        } catch (NoSuchDriverIDException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+	
+	@Autowired
+	private OrdersService ordersService;
+	
+	@GetMapping("/")
+	public ResponseEntity<List<DeliveryDrivers>> getAllDrivers() {
+        List<DeliveryDrivers> drivers = deliverydriversService.getAllDeliveryDrivers();
+        return new ResponseEntity<List<DeliveryDrivers>>(drivers, HttpStatus.OK);
     }
+	
 	@GetMapping("/{driverId}")
-	 public ResponseEntity<?> getDriverById(@PathVariable int driverId) {
+	 public ResponseEntity<?> getDriverById(@PathVariable("driverId") int driverId) {
         try {
             DeliveryDrivers driver = deliverydriversService.getDeliveryDriversById(driverId);
-            return ResponseEntity.ok(driver);
+            return new ResponseEntity<>(driver, HttpStatus.OK);
         } catch (InvalidDriverIDException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+	
     @PutMapping("/{driverId}")
-    public ResponseEntity<String> updateDeliveryDrivers(@PathVariable int driverId, @RequestBody DeliveryDrivers deliverydrivers) {
+    public ResponseEntity<String> updateDeliveryDrivers(@PathVariable("driverId") int driverId, @RequestBody DeliveryDrivers deliverydrivers) {
         try {
             String result = deliverydriversService.updateDeliveryDrivers(driverId, deliverydrivers);
-            return ResponseEntity.ok(result);
+            return new ResponseEntity<String>(result, HttpStatus.OK);
         } catch (DuplicateDriverIDException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        	return new ResponseEntity<String>(e.getMessage(), HttpStatus.CONFLICT);
+        }
     }
-    }
+    
+    @GetMapping("/{driverId}/orders")
+	public ResponseEntity<List<Orders>> getOrdersByDriverId(@PathVariable("driverId") int driverId) {
+		return new ResponseEntity<List<Orders>>(ordersService.getOrdersByDriverId(driverId), HttpStatus.OK);
+	}
 }
 

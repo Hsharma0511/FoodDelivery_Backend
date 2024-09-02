@@ -3,15 +3,12 @@ package com.fooddelivery.service;
 import java.util.List;
 
 import com.fooddelivery.Exception.InvalidRestaurantIdException;
-import com.fooddelivery.model.Restaurants;
+import com.fooddelivery.entity.Restaurants;
 
 public interface RestaurantsService {
 	 List<Restaurants> getAllRestaurants();
-	 Restaurants updateRestaurants(Restaurants restaurants) throws InvalidRestaurantIdException;
-	 public Restaurants getRestaurantsById(int restaurantId);
-	 void deleteRestaurantsById(int restaurantId) throws InvalidRestaurantIdException;
-     public Restaurants addRestaurants(Restaurants restaurants);
-
-	 
-	 
+	 Restaurants updateRestaurant(Restaurants restaurant) throws InvalidRestaurantIdException;
+	 public Restaurants getRestaurantById(int restaurantId);
+	 void deleteRestaurantById(int restaurantId) throws InvalidRestaurantIdException;
+     public Restaurants addRestaurant(Restaurants restaurants);
 }

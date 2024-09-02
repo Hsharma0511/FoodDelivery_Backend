@@ -1,4 +1,4 @@
-package com.fooddelivery.Exception;
+package com.fooddelivery.dto;
 
 import java.time.LocalDateTime;
 
@@ -33,6 +33,4 @@ public class ExceptionResponse {
     	this.timestamp=timestamp;
     	
     }
- 
-
 }

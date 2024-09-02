@@ -1,7 +1,6 @@
 package com.fooddelivery.controller;
-
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,41 +16,45 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fooddelivery.Exception.CustomerNotFoundException;
 import com.fooddelivery.Exception.DuplicateCustomerIDException;
-import com.fooddelivery.model.Customers;
-import com.fooddelivery.model.Orders;
+import com.fooddelivery.Exception.InvalidRestaurantIdException;
+import com.fooddelivery.entity.Customers;
+import com.fooddelivery.entity.Orders;
+import com.fooddelivery.entity.Ratings;
+import com.fooddelivery.entity.Restaurants;
 import com.fooddelivery.service.CustomersService;
+import com.fooddelivery.service.RestaurantsService;
+
 
 @RestController
 @RequestMapping("/api/customers")
 public class CustomersController {
 	@Autowired
 	private CustomersService customersService;
-
-	public CustomersController(CustomersService customersService) {
-		this.customersService = customersService;
-	}
+	
+	@Autowired
+	RestaurantsService restaurantsService;
 
 	@GetMapping("/")
 	public ResponseEntity<List<Customers>> getAllCustomers() {
 		List<Customers> customers = customersService.getAllCustomers();
-		return ResponseEntity.ok().body(customers);
+		return new ResponseEntity<List<Customers>>(customers, HttpStatus.OK);
 	}
 
-	@GetMapping(value = "/{customer_id}", produces = "application/json")
-	public ResponseEntity<Customers> getCustomerById(@PathVariable int customer_id) {
+	@GetMapping("/{customer_id}")
+	public ResponseEntity<Customers> getCustomerById(@PathVariable("customer_id") int customer_id) {
 		Customers customer = customersService.getCustomerById(customer_id);
-		if (customer == null) {
+		
+		if(customer == null) {
 			throw new CustomerNotFoundException(" with ID: " + customer_id);
 		}
-		return ResponseEntity.ok().body(customer);
+		return new ResponseEntity<Customers>(customer, HttpStatus.OK);
 	}
 
-	@PostMapping
+	@PostMapping("/")
 	public String addCustomer(@RequestBody Customers customer) {
 		try {
 			if (customersService.getCustomerById(customer.getCustomer_id()) != null) {
-				throw new DuplicateCustomerIDException(
-						"Customer with ID " + customer.getCustomer_id() + " already exists");
+				throw new DuplicateCustomerIDException("Customer with ID " + customer.getCustomer_id() + " already exists");
 			}
 			Customers savedCustomer = customersService.addCustomer(customer);
 			return "Customer Create successfully with ID:" + savedCustomer.getCustomer_id();
@@ -60,32 +63,85 @@ public class CustomersController {
 		}
 	}
 
-	@PutMapping(value = "/{customer_id}", consumes = "application/json", produces = "application/json")
-	public ResponseEntity<Customers> updateCustomerById(@PathVariable("customer_id") int customer_id,
-			@RequestBody Customers updatedCustomer) {
+	@PutMapping("/{customer_id}")
+	public ResponseEntity<Customers> updateCustomerById(@PathVariable("customer_id") int customer_id, @RequestBody Customers updatedCustomer) {
 		Customers customer = customersService.getCustomerById(customer_id);
+		
 		if (customer == null) {
-			return ResponseEntity.notFound().build();
+			return new ResponseEntity<Customers>(HttpStatus.NOT_FOUND);
 		}
+		
 		customer.setCustomer_name(updatedCustomer.getCustomer_name());
 		customer.setCustomer_email(updatedCustomer.getCustomer_email());
 		customer.setCustomer_phone(updatedCustomer.getCustomer_phone());
 		Customers savedCustomer = customersService.updateCustomer(customer);
-		return ResponseEntity.ok().body(savedCustomer);
+		
+		return new ResponseEntity<Customers>(savedCustomer, HttpStatus.CREATED);
 	}
 
-	@DeleteMapping(value = "/{customer_id}", produces = "application/json")
-	public ResponseEntity<String> deleteCustomerById(@PathVariable int customer_id) {
+	@DeleteMapping("/{customer_id}")
+	public ResponseEntity<String> deleteCustomerById(@PathVariable("customer_id") int customer_id) {
 		boolean deleted = customersService.deleteCustomerById(customer_id);
-		if (!deleted) {
-			return ResponseEntity.notFound().build();
+		
+		if(!deleted) {
+			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 		}
-		return ResponseEntity.ok().body("Customer deleted successfully");
+		return new ResponseEntity<String>("Customer deleted successfully", HttpStatus.NO_CONTENT);
 	}
-
+	
 	@GetMapping("/{customer_id}/orders")
-	public List<Orders> getOrdersByCustomerId(@PathVariable int customerId) {
-		return customersService.getOrdersByCustomerId(customerId);
+	public ResponseEntity<List<Orders>> getOrdersByCustomerId(@PathVariable("customer_id") int customerId) {
+		return new ResponseEntity<List<Orders>>(customersService.getOrdersByCustomerId(customerId), HttpStatus.OK); 
 	}
-
+	
+	@GetMapping("/{customer_id}/ratings")
+	public ResponseEntity<List<Ratings>> getAllRatingsByCustomerId(@PathVariable("customer_id") int customerId) {
+		return new ResponseEntity<List<Ratings>>(customersService.getAllRatingsByCustomerId(customerId), HttpStatus.OK); 
+	}
+	
+	@PostMapping("/{customer_id}/favouriteRestaurant/{restaurant_id}")
+	public ResponseEntity<String> addFavoriteRestaurant(@PathVariable("customer_id") int customerId,@PathVariable("restaurant_id") int restaurantId)
+			throws InvalidRestaurantIdException{
+		Customers customer = customersService.getCustomerById(customerId);
+		if (customer == null) {
+			throw new CustomerNotFoundException(" with ID: " + customerId);
+		}
+		
+		Restaurants restaurant = restaurantsService.getRestaurantById(restaurantId);
+		if (restaurant == null) {
+			throw new InvalidRestaurantIdException(" with ID: " + restaurantId);
+		}
+		customersService.addFavoriteRestaurant(customerId, restaurantId);
+		
+		return new ResponseEntity<String>("restaurant "+restaurantId+" successfully added favorite restaurant for "+customerId, HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/{customer_id}/favouriteRestaurant/{restaurant_id}")
+	public ResponseEntity<String> deleteFavoriteRestaurant(@PathVariable("customer_id") int customerId,@PathVariable("restaurant_id") int restaurantId)
+			throws InvalidRestaurantIdException{
+		Customers customer = customersService.getCustomerById(customerId);
+		if (customer == null) {
+			throw new CustomerNotFoundException(" with ID: " + customerId);
+		}
+		
+		Restaurants restaurant = restaurantsService.getRestaurantById(restaurantId);
+		if (restaurant == null) {
+			throw new InvalidRestaurantIdException(" with ID: " + restaurantId);
+		}
+		customersService.deleteFavoriteRestaurant(customerId, restaurantId);
+		
+		return new ResponseEntity<String>("restaurant "+restaurantId+" successfully removed favorite restaurant for "+customerId, HttpStatus.OK);
+	}
+	
+	@GetMapping("/{customer_id}/favouriteRestaurant/")
+	public ResponseEntity<?> getAllFavoriteRestaurants(@PathVariable("customer_id") int customerId){
+		Customers customer = customersService.getCustomerById(customerId);
+		if (customer == null) {
+			throw new CustomerNotFoundException(" with ID: " + customerId);
+		}
+		if(customersService.getAllFavoriteRestaurants(customerId).isEmpty()) {
+			return new ResponseEntity<String>("no favorite restauranst for "+customerId, HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<Set<Restaurants>>(customersService.getAllFavoriteRestaurants(customerId), HttpStatus.FOUND);
+	}
 }

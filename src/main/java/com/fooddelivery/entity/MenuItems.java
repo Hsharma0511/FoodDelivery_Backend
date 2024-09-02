@@ -1,5 +1,6 @@
-package com.fooddelivery.model;
+package com.fooddelivery.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -7,15 +8,31 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name="MenuItems")
+@Table(name="MENU_ITEMS")
 public class MenuItems {
 	@Id
+	@Column(name="ITEM_ID")
 	@GeneratedValue(strategy=GenerationType.SEQUENCE)
 	private int item_id;
+	
+	@Column(name="ITEM_NAME")
+	@NotEmpty(message="Item name cannot be empty")
+    @Size(max=50, message="Item name must be less than or equal to 100 characters")
     private String item_name;
+	
+	@Column(name="ITEM_DESCRIPTION")
+	@NotEmpty(message="Item description cannot be empty")
+	@Size(max=255, message="Item description must be less than or equal to 255 characters")
     private String item_description;
+	
+	@Column(name="ITEM_PRICE")
+	@NotEmpty(message="Item price cannot be empty")
+	@DecimalMin(value="0.0", inclusive=false, message="Item price must be greater than zero")
     private float item_price;
     
     @ManyToOne
@@ -30,9 +47,7 @@ public class MenuItems {
 		this.item_price = item_price;
 	}
 	
-	public MenuItems() {
-	
-	}
+	public MenuItems() {}
     
 	public Restaurants getRestaurants() {
 		return restaurants;
@@ -71,13 +86,4 @@ public class MenuItems {
 		return "MenuItems [item_id=" + item_id + ", item_name=" + item_name + ", item_description=" + item_description
 				+ ", item_price=" + item_price +  "]";
 	}
-
-	public void setRestaurant_id(int restaurant_id) {
-		// TODO Auto-generated method stub
-		
-	}
-    
-    
-	
-
 }

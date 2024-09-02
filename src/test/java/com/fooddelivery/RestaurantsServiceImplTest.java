@@ -1,92 +1,121 @@
 package com.fooddelivery;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import com.fooddelivery.Exception.DuplicateRestaurantIDException;
+import com.fooddelivery.Exception.InvalidRestaurantIdException;
+import com.fooddelivery.Exception.NoSuchRestaurantIDException;
+import com.fooddelivery.Repository.RestaurantsRepository;
+import com.fooddelivery.entity.Restaurants;
+import com.fooddelivery.service.RestaurantsServiceImpl;
 
-import java.util.ArrayList;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.boot.test.context.SpringBootTest;
+
 import java.util.List;
 import java.util.Optional;
 
-import org.aspectj.lang.annotation.Before;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
-
-import com.fooddelivery.Exception.CustomException;
-import com.fooddelivery.Exception.InvalidRestaurantIdException;
-import com.fooddelivery.Repository.RestaurantsRepository;
-import com.fooddelivery.model.Restaurants;
-import com.fooddelivery.service.RestaurantsServiceImpl;
-
-import jakarta.transaction.Transactional;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@ExtendWith(MockitoExtension.class)
 public class RestaurantsServiceImplTest {
-	@Mock
-	private RestaurantsRepository restaurantsRepository;
 
-	@InjectMocks
-	private RestaurantsServiceImpl restaurantsService;
-	
-	
-	
-	@Test
-    public void testShowRestaurants() {
-        // Arrange
-        List<Restaurants> restaurants = new ArrayList<>();
-        restaurants.add(new Restaurants(53, "Bella Italia", "123 Main Street", "91234567"));
-        restaurants.add(new Restaurants(54, "Tokyo Sushi Bar", "456 Elm Street", "91234897"));
-        restaurants.add(new Restaurants(55, "Le Bistro Français", "789 Oak Avenue", "91234667"));
-        when(restaurantsRepository.findAll()).thenReturn(restaurants);
-        // Act
+    @InjectMocks
+    private RestaurantsServiceImpl restaurantsService;
+
+    @Mock
+    private RestaurantsRepository restaurantsRepository;
+
+    @Test
+    public void testGetAllRestaurants() {
+        Restaurants restaurant = new Restaurants(1, "Tasty Bites", "123 Main St", "+1234567890");
+        List<Restaurants> restaurants = List.of(restaurant);
+        Mockito.when(restaurantsRepository.findAll()).thenReturn(restaurants);
+
         List<Restaurants> result = restaurantsService.getAllRestaurants();
-        // Assert
-        assertEquals(3, result.size());
-        assertEquals("Bella Italia", result.get(0).getRestaurant_name());
-        assertEquals("Tokyo Sushi Bar", result.get(1).getRestaurant_name());
-        assertEquals("Le Bistro Français", result.get(2).getRestaurant_name());
-        verify(restaurantsRepository).findAll();
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
+        assertEquals("Tasty Bites", result.get(0).getRestaurant_name());
     }
-	
-	 @Test
-	    @Transactional
-	    public void testUpdateRestaurants_ValidId() throws InvalidRestaurantIdException {
-	        // Mocking the previous state of the restaurant
-	        Restaurants existingRestaurant = new Restaurants();
-	        existingRestaurant.setRestaurant_id(50); // Existing restaurant ID
-	        existingRestaurant.setRestaurant_name("Old Name");
-	        existingRestaurant.setRestaurant_address("Old Address");
-	        existingRestaurant.setRestaurant_phone("Old Phone");
 
-	        when(restaurantsRepository.findById(existingRestaurant.getRestaurant_id()))
-	            .thenReturn(Optional.of(existingRestaurant));
+    @Test
+    public void testUpdateRestaurant_Success() throws InvalidRestaurantIdException {
+        Restaurants existingRestaurant = new Restaurants(1, "Tasty Bites", "123 Main St", "+1234567890");
+        Restaurants updatedRestaurant = new Restaurants(1, "Tasty Burgers", "123 Main St", "+1234567890");
 
-	        // Creating an updated restaurant
-	        Restaurants updatedRestaurant = new Restaurants();
-	        updatedRestaurant.setRestaurant_id(50); // Existing restaurant ID
-	        updatedRestaurant.setRestaurant_name("New Name");
-	        updatedRestaurant.setRestaurant_address("New Address");
-	        updatedRestaurant.setRestaurant_phone("New Phone");
+        Mockito.when(restaurantsRepository.findById(1)).thenReturn(Optional.of(existingRestaurant));
+        Mockito.when(restaurantsRepository.save(existingRestaurant)).thenReturn(updatedRestaurant);
 
-	        // Calling the method under test
-	        Restaurants result = restaurantsService.updateRestaurants(updatedRestaurant);
+        Restaurants result = restaurantsService.updateRestaurant(updatedRestaurant);
+        assertNotNull(result);
+        assertEquals("Tasty Burgers", result.getRestaurant_name());
+    }
 
-	        // Verifying that the repository's save method was called with the updated restaurant
-	        verify(restaurantsRepository).save(updatedRestaurant);
+    @Test
+    public void testUpdateRestaurant_InvalidId() {
+        Restaurants restaurant = new Restaurants(1, "Tasty Bites", "123 Main St", "+1234567890");
+        Mockito.when(restaurantsRepository.findById(1)).thenReturn(Optional.empty());
 
-	        // Asserting that the returned restaurant is the same as the updated one
-	        assertEquals(updatedRestaurant, result);
-	    }
-	}
-   
+        assertThrows(InvalidRestaurantIdException.class, () -> {
+            restaurantsService.updateRestaurant(restaurant);
+        });
+    }
+
+    @Test
+    public void testGetRestaurantById_Found() throws NoSuchRestaurantIDException {
+        Restaurants restaurant = new Restaurants(1, "Tasty Bites", "123 Main St", "+1234567890");
+        Mockito.when(restaurantsRepository.findById(1)).thenReturn(Optional.of(restaurant));
+
+        Restaurants result = restaurantsService.getRestaurantById(1);
+        assertNotNull(result);
+        assertEquals("Tasty Bites", result.getRestaurant_name());
+    }
+
+    @Test
+    public void testGetRestaurantById_NotFound() {
+        Mockito.when(restaurantsRepository.findById(1)).thenReturn(Optional.empty());
+
+        assertThrows(NoSuchRestaurantIDException.class, () -> {
+            restaurantsService.getRestaurantById(1);
+        });
+    }
+
+    @Test
+    public void testDeleteRestaurantById_Success() throws InvalidRestaurantIdException {
+        Mockito.when(restaurantsRepository.existsById(1)).thenReturn(true);
+
+        restaurantsService.deleteRestaurantById(1);
+        Mockito.verify(restaurantsRepository, Mockito.times(1)).deleteById(1);
+    }
+
+    @Test
+    public void testDeleteRestaurantById_InvalidId() {
+        Mockito.when(restaurantsRepository.existsById(1)).thenReturn(false);
+
+        assertThrows(InvalidRestaurantIdException.class, () -> {
+            restaurantsService.deleteRestaurantById(1);
+        });
+    }
+
+    @Test
+    public void testAddRestaurant_Success() {
+        Restaurants restaurant = new Restaurants(1, "Tasty Bites", "123 Main St", "+1234567890");
+        Mockito.when(restaurantsRepository.existsById(1)).thenReturn(false);
+        Mockito.when(restaurantsRepository.save(restaurant)).thenReturn(restaurant);
+
+        Restaurants result = restaurantsService.addRestaurant(restaurant);
+        assertNotNull(result);
+        assertEquals("Tasty Bites", result.getRestaurant_name());
+    }
+
+    @Test
+    public void testAddRestaurant_DuplicateId() {
+        Restaurants restaurant = new Restaurants(1, "Tasty Bites", "123 Main St", "+1234567890");
+        Mockito.when(restaurantsRepository.existsById(1)).thenReturn(true);
+
+        assertThrows(DuplicateRestaurantIDException.class, () -> {
+            restaurantsService.addRestaurant(restaurant);
+        });
+    }
+}

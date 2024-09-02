@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.fooddelivery.model.MenuItems;
+import com.fooddelivery.entity.MenuItems;
 
 @Repository
 public interface MenuItemsRepository extends JpaRepository<MenuItems,Integer> {
@@ -20,5 +20,4 @@ public interface MenuItemsRepository extends JpaRepository<MenuItems,Integer> {
 	@Modifying
 	@Query("DELETE FROM MenuItems mi WHERE mi.restaurants.restaurant_id =:restaurant_id AND mi.id=:item_id")
 	void deleteByRestaurantIdAndItemId(int restaurant_id, int item_id);
-   
 }

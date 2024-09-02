@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.fooddelivery.Exception.DuplicateRestaurantIDException;
 import com.fooddelivery.Exception.InvalidRestaurantIdException;
 import com.fooddelivery.Exception.NoSuchRestaurantIDException;
-import com.fooddelivery.model.Restaurants;
+import com.fooddelivery.entity.Restaurants;
 import com.fooddelivery.service.RestaurantsService;
 
 @RestController
@@ -26,53 +26,45 @@ public class RestaurantsController {
 	@Autowired
 	private RestaurantsService restaurantsService;
 	
-	@GetMapping(consumes = "application/json", produces="application/json")
-	public ResponseEntity<List<Restaurants>> getAllRestaurants(){
-		System.out.println("Restaurants fetched Successfully");
+	@GetMapping("/")
+	public ResponseEntity<List<Restaurants>> getAllRestaurants() {
 		List<Restaurants> restaurants = restaurantsService.getAllRestaurants();
-		return new ResponseEntity<>(restaurants,HttpStatus.OK);
+		return new ResponseEntity<List<Restaurants>>(restaurants, HttpStatus.OK);
 	}
 	
 	@PutMapping("/{restaurant_id}")
-	ResponseEntity<Restaurants> updateRestaurants(@RequestBody Restaurants rest) throws InvalidRestaurantIdException{
+	ResponseEntity<Restaurants> updateRestaurants(@RequestBody Restaurants rest) throws InvalidRestaurantIdException {
+		Restaurants restaurants = restaurantsService.updateRestaurant(rest);
 		
-		Restaurants restaurants=restaurantsService.updateRestaurants(rest);
-		if(rest.getRestaurant_id()<=0) {
+		if(rest.getRestaurant_id() <= 0) {
 			throw new InvalidRestaurantIdException("Invalid restaurant ID: "+rest.getRestaurant_id());
 		}
-		System.out.println("Restuarant details updated successfully");		
-		return new ResponseEntity<Restaurants>( restaurants,HttpStatus.ACCEPTED);
+		return new ResponseEntity<Restaurants>(restaurants, HttpStatus.ACCEPTED);
 	}
 	
-	@GetMapping("{restaurantId}")
-	public ResponseEntity<String> getRestaurantsById(@PathVariable("restaurantId")int restaurantId){
-	System.out.println("Restaurant details fetched successfully");
-	try {
-		Restaurants restaurants = restaurantsService.getRestaurantsById(restaurantId);
-		return ResponseEntity.ok(restaurants.toString());
-	}catch(NoSuchRestaurantIDException e) {
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Restaurant with ID  "+ restaurantId +"not found");
-	}
+	@GetMapping("/{restaurantId}")
+	public ResponseEntity<String> getRestaurantsById(@PathVariable("restaurantId") int restaurantId) {
+		try {
+			Restaurants restaurant = restaurantsService.getRestaurantById(restaurantId);
+			return new ResponseEntity<String>(restaurant.toString(), HttpStatus.OK);
+		} catch(NoSuchRestaurantIDException e) {
+			return new ResponseEntity<String>("Restaurant with ID "+ restaurantId +" not found", HttpStatus.NOT_FOUND);
+		}
 	}
  
-	@PostMapping
-	public ResponseEntity<String> addRestaurants(@RequestBody Restaurants restaurants) throws DuplicateRestaurantIDException{
-			System.out.println("Restaurant created successfully");
+	@PostMapping("/")
+	public ResponseEntity<String> addRestaurant(@RequestBody Restaurants restaurant) throws DuplicateRestaurantIDException {
 			try {
-				Restaurants addedRestaurant = restaurantsService.addRestaurants(restaurants);
-				return ResponseEntity.ok(addedRestaurant.toString());
-			}catch(DuplicateRestaurantIDException e) {
-				return ResponseEntity.badRequest().body(e.getMessage());	
+				Restaurants addedRestaurant = restaurantsService.addRestaurant(restaurant);
+				return new ResponseEntity<String>(addedRestaurant.toString(), HttpStatus.OK);
+			} catch(DuplicateRestaurantIDException e) {
+				return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
 			}
 	}
-	@DeleteMapping("{restaurantId}")
-	public ResponseEntity<Void> deleteRestaurantsById(@PathVariable int restaurantId) throws InvalidRestaurantIdException{
-		System.out.println("Restaurant deleted successfully");
-		restaurantsService.deleteRestaurantsById(restaurantId);
-		return ResponseEntity.noContent().build();
+	
+	@DeleteMapping("/{restaurantId}")
+	public ResponseEntity<Void> deleteRestaurantsById(@PathVariable("restaurantId") int restaurantId) throws InvalidRestaurantIdException {
+		restaurantsService.deleteRestaurantById(restaurantId);
+		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
-	
-	
-	
-
 }

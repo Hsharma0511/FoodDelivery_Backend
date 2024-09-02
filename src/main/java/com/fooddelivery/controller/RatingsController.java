@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fooddelivery.Exception.InvalidRestaurantIdException;
-import com.fooddelivery.model.Ratings;
+import com.fooddelivery.entity.Ratings;
 import com.fooddelivery.service.RatingsService;
 
 @RestController
@@ -21,14 +21,14 @@ public class RatingsController {
     private RatingsService ratingsService;
     
     @GetMapping("/{restaurant_id}/ratings")
-    public ResponseEntity<List<Ratings>> getAllRatingsByRestaurantId(@PathVariable int restaurant_id) throws InvalidRestaurantIdException{
+    public ResponseEntity<List<Ratings>> getAllRatingsByRestaurantId(@PathVariable("restaurant_id") int restaurant_id) throws InvalidRestaurantIdException{
     	
-    	System.out.println("Ratings for the restaurant retrieved successfully.");
-    	List<Ratings> ratings =ratingsService.getAllRatingsByRestaurantId(restaurant_id);
+    	List<Ratings> ratings = ratingsService.getAllRatingsByRestaurantId(restaurant_id);
+    	
     	if(ratings.isEmpty()) {
     		throw new InvalidRestaurantIdException("Invalid restaurant ID");
     	}
-    	return new ResponseEntity<>(ratings,HttpStatus.OK);
+    	return new ResponseEntity<List<Ratings>>(ratings, HttpStatus.OK);
 
     }
 }

@@ -1,5 +1,6 @@
-package com.fooddelivery.model;
+package com.fooddelivery.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -7,20 +8,46 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "DeliveryAddresses")
+@Table(name="DELIVERY_ADDRESSES")
 public class DeliveryAddresses {
 	@Id
+	@Column(name="ADDRESS_ID")
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int address_id;
 	
+	@Column(name="ADDRESS_LINE1")
+	@NotEmpty(message="Address line 1 cannot be empty")
+    @Size(max=100, message = "Address line 1 must be less than or equal to 100 characters")
 	private String address_line1;
+	
+	@Column(name="ADDRESS_LINE2")
+	@Size(max=100, message="Address line 2 must be less than or equal to 100 characters")
 	private String address_line2;
+	
+	@Column(name="CITY")
+	@NotEmpty(message="City cannot be empty")
+    @Size(max=50, message="City must be less than or equal to 50 characters")
 	private String city;
+	
+	@Column(name="STATE")
+	@NotEmpty(message="State cannot be empty")
+    @Size(max=50, message="State must be less than or equal to 50 characters")
 	private String state;
+	
+	@Column(name="POSTAL_CODE")
+	@NotEmpty(message="Postal code cannot be empty")
+    @Pattern(regexp="^[1-9][0-9]{4}$", message="Postal code must be a valid format")
 	private String postal_code;
 
+	@ManyToOne
+	@JoinColumn(name="customer_id")
+	private Customers customers;
+	
 	public DeliveryAddresses(int address_id, String address_line1, String address_line2, String city,
 			String state, String postal_code) {
 		super();
@@ -32,13 +59,8 @@ public class DeliveryAddresses {
 		this.postal_code = postal_code;
 	}
 
-	public DeliveryAddresses() {
-
-	}
+	public DeliveryAddresses() {}
 	
-    @ManyToOne
-    @JoinColumn(name="customer_id")
-    private Customers customers;
 	public int getAddress_id() {
 		return address_id;
 	}
@@ -101,5 +123,4 @@ public class DeliveryAddresses {
 				+ address_line1 + ", address_line2=" + address_line2 + ", city=" + city + ", state=" + state
 				+ ", postal_code=" + postal_code + "]";
 	}
-
 }
