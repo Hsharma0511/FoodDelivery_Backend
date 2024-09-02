@@ -99,7 +99,7 @@ public class OrdersController {
 		Orders order = ordersService.getOrders(orderId);
 		
 		if(order == null) {
-			return ResponseEntity.notFound().build();
+			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 		}
 		
 		order.setOrder_status(newStatus);

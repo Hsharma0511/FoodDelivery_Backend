@@ -45,22 +45,22 @@ public class RestaurantsController {
 	}
 	
 	@GetMapping("/{restaurantId}")
-	public ResponseEntity<String> getRestaurantsById(@PathVariable("restaurantId") int restaurantId) {
+	public ResponseEntity<?> getRestaurantsById(@PathVariable("restaurantId") int restaurantId) {
 		try {
 			Restaurants restaurant = restaurantsService.getRestaurantById(restaurantId);
-			return new ResponseEntity<String>(restaurant.toString(), HttpStatus.OK);
+			return new ResponseEntity<>(restaurant, HttpStatus.OK);
 		} catch(NoSuchRestaurantIDException e) {
-			return new ResponseEntity<String>("Restaurant with ID "+ restaurantId +" not found", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>("Restaurant with ID "+ restaurantId +" not found", HttpStatus.NOT_FOUND);
 		}
 	}
  
 	@PostMapping("/")
-	public ResponseEntity<String> addRestaurant(@RequestBody @Valid Restaurants restaurant) throws DuplicateRestaurantIDException {
+	public ResponseEntity<?> addRestaurant(@RequestBody @Valid Restaurants restaurant) throws DuplicateRestaurantIDException {
 			try {
 				Restaurants addedRestaurant = restaurantsService.addRestaurant(restaurant);
-				return new ResponseEntity<String>(addedRestaurant.toString(), HttpStatus.OK);
+				return new ResponseEntity<>(addedRestaurant, HttpStatus.OK);
 			} catch(DuplicateRestaurantIDException e) {
-				return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+				return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 			}
 	}
 	

@@ -53,15 +53,14 @@ public class CustomersController {
 	}
 
 	@PostMapping("/")
-	public String addCustomer(@RequestBody @Valid Customers customer) {
+	public ResponseEntity<Customers> addCustomer(@RequestBody @Valid Customers customer) {
 		try {
 			if (customersService.getCustomerById(customer.getCustomer_id()) != null) {
 				throw new DuplicateCustomerIDException("Customer with ID " + customer.getCustomer_id() + " already exists");
 			}
-			Customers savedCustomer = customersService.addCustomer(customer);
-			return "Customer Create successfully with ID:" + savedCustomer.getCustomer_id();
+			return new ResponseEntity<Customers>( customersService.addCustomer(customer), HttpStatus.OK);
 		} catch (DuplicateCustomerIDException e) {
-			return " Conflict: " + e.getMessage();
+			return new ResponseEntity<Customers>(HttpStatus.CONFLICT);
 		}
 	}
 
