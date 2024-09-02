@@ -26,10 +26,11 @@ import com.fooddelivery.service.DeliveryDriversService;
 import com.fooddelivery.service.OrdersService;
 import com.fooddelivery.service.RestaurantsService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/orders")
 public class OrdersController {
- 
 	@Autowired
 	private OrdersService ordersService;
 	
@@ -47,8 +48,8 @@ public class OrdersController {
 		return ordersService.getOrderByCustomerId(customer_id);
 	}
 	
-	@PostMapping("/{orderId}/{customerId}/{restaurantId}/{driverId}")
-	public ResponseEntity<Orders> PlaceOrder(@RequestBody Orders orders, @PathVariable("customerId") int customerId, @PathVariable("restaurantId") int restaurantId, @PathVariable("driverId") int driverId)
+	@PostMapping("/{customerId}/{restaurantId}/{driverId}")
+	public ResponseEntity<Orders> placeOrder(@RequestBody @Valid Orders orders, @PathVariable("customerId") int customerId, @PathVariable("restaurantId") int restaurantId, @PathVariable("driverId") int driverId)
 			throws DuplicateOrderIdException{
 		try {
 			Customers customer = customersService.getCustomerById(customerId);
@@ -90,7 +91,7 @@ public class OrdersController {
 	}
 	
 	@PutMapping("/{orderId}/status")
-	public ResponseEntity<String> updateOrderStatus(@PathVariable int orderId, @RequestBody String newStatus) throws InvalidOrderIdException, OrdersNotFoundException {
+	public ResponseEntity<String> updateOrderStatus(@PathVariable int orderId, @RequestBody @Valid String newStatus) throws InvalidOrderIdException, OrdersNotFoundException {
 		if(orderId <= 0) {
 			throw new InvalidOrderIdException("Order Id "+orderId+" is Invalid to update");
 		}

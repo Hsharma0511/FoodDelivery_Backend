@@ -19,67 +19,91 @@ public class GlobalExceptionHandler  {
 	
 	@ExceptionHandler(InvalidRestaurantIdException.class)
     public ResponseEntity<ExceptionResponse> handleInvalidCustomerIDException(InvalidRestaurantIdException e){
-        ExceptionResponse response=new ExceptionResponse();
+        ExceptionResponse response = new ExceptionResponse();
+        
         response.setErrorCode("CONFLICT");
         response.setErrorMessage(e.getMessage());
         response.setTimestamp(LocalDateTime.now());
-        ResponseEntity<ExceptionResponse> responseEntyity=new ResponseEntity<ExceptionResponse>(response, HttpStatus.CONFLICT);
-        return responseEntyity;
+        
+        return new ResponseEntity<ExceptionResponse>(response, HttpStatus.CONFLICT);
     }
 	
 	@ExceptionHandler(InvalidItemIdException.class)
     public ResponseEntity<ExceptionResponse> handleInvalidItemIdException(InvalidItemIdException e){
-        ExceptionResponse response=new ExceptionResponse();
+        ExceptionResponse response = new ExceptionResponse();
+        
         response.setErrorCode("CONFLICT");
         response.setErrorMessage(e.getMessage());
         response.setTimestamp(LocalDateTime.now());
-        ResponseEntity<ExceptionResponse> responseEntyity=new ResponseEntity<ExceptionResponse>(response, HttpStatus.CONFLICT);
-        return responseEntyity;
+        
+        return new ResponseEntity<ExceptionResponse>(response, HttpStatus.CONFLICT);
     }
 	
 	@ExceptionHandler(InvalidMenuItemException.class)
     public ResponseEntity<ExceptionResponse> handleInvalidMenuItemException(InvalidMenuItemException e){
-        ExceptionResponse response=new ExceptionResponse();
+        ExceptionResponse response = new ExceptionResponse();
+        
         response.setErrorCode("CONFLICT");
         response.setErrorMessage(e.getMessage());
         response.setTimestamp(LocalDateTime.now());
-        ResponseEntity<ExceptionResponse> responseEntyity=new ResponseEntity<ExceptionResponse>(response, HttpStatus.CONFLICT);
-        return responseEntyity;
+        
+        return new ResponseEntity<ExceptionResponse>(response, HttpStatus.CONFLICT);
     }
 		
 	@ExceptionHandler(CustomerNotFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public ResponseEntity<String> handleCustomerNotFoundException(CustomerNotFoundException ex){
-		return new ResponseEntity<String>("Customer Not Found "+ex.getMessage(), HttpStatus.NOT_FOUND);
+	public ResponseEntity<ExceptionResponse> handleCustomerNotFoundException(CustomerNotFoundException ex){
+		ExceptionResponse response = new ExceptionResponse();
+        
+        response.setErrorCode("NOT_FOUND");
+        response.setErrorMessage(ex.getMessage());
+        response.setTimestamp(LocalDateTime.now());
+        
+        return new ResponseEntity<ExceptionResponse>(response, HttpStatus.NOT_FOUND);
 	}
 	
     @ExceptionHandler(DuplicateCustomerIDException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ResponseEntity<String> handleDuplicateCustomerIDException(DuplicateCustomerIDException ex){
-    	return new ResponseEntity<String>("Conflict: "+ex.getMessage(), HttpStatus.CONFLICT);
+    public ResponseEntity<ExceptionResponse> handleDuplicateCustomerIDException(DuplicateCustomerIDException ex){
+    	ExceptionResponse response = new ExceptionResponse();
+        
+        response.setErrorCode("CONFLICT");
+        response.setErrorMessage(ex.getMessage());
+        response.setTimestamp(LocalDateTime.now());
+        
+        return new ResponseEntity<ExceptionResponse>(response, HttpStatus.CONFLICT);
     }
     
     @ExceptionHandler(DuplicateRestaurantIDException.class)
     public ResponseEntity<ExceptionResponse> handleRestaurantNotFoundException(DuplicateRestaurantIDException e){
-        ExceptionResponse response=new ExceptionResponse();
+        ExceptionResponse response = new ExceptionResponse();
+        
         response.setErrorCode("CONFLICT");
         response.setErrorMessage(e.getMessage());
         response.setTimestamp(LocalDateTime.now());
-        ResponseEntity<ExceptionResponse> responseEntyity=new ResponseEntity<ExceptionResponse>(response,HttpStatus.CONFLICT);
-        return responseEntyity;
+        
+        return new ResponseEntity<ExceptionResponse>(response,HttpStatus.CONFLICT);
     }
  	
  	@ExceptionHandler(NoSuchRestaurantIDException.class)
- 	public ResponseEntity<String> NoSuchRestaurantIDException(NoSuchRestaurantIDException e){
- 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Restaurant ID not found");
+ 	public ResponseEntity<ExceptionResponse> NoSuchRestaurantIDException(NoSuchRestaurantIDException e){
+ 		ExceptionResponse response = new ExceptionResponse();
+        
+        response.setErrorCode("NOT_FOUND");
+        response.setErrorMessage(e.getMessage());
+        response.setTimestamp(LocalDateTime.now());
+        
+        return new ResponseEntity<ExceptionResponse>(response,HttpStatus.NOT_FOUND);
  	}
  	
  	@ExceptionHandler(OrdersNotFoundException.class)
     public ResponseEntity<ExceptionResponse> handleOrdersNotFoundException(OrdersNotFoundException e){
-        ExceptionResponse response=new ExceptionResponse();
+        ExceptionResponse response = new ExceptionResponse();
+        
         response.setErrorCode("CONFLICT");
         response.setErrorMessage(e.getMessage());
         response.setTimestamp(LocalDateTime.now());
+        
         return new ResponseEntity<ExceptionResponse>(response, HttpStatus.CONFLICT);
     }
  	
@@ -91,7 +115,7 @@ public class GlobalExceptionHandler  {
         response.setErrorMessage(e.getMessage());
         response.setTimestamp(LocalDateTime.now());
         
-        return new ResponseEntity<ExceptionResponse>(response,HttpStatus. CONFLICT);
+        return new ResponseEntity<ExceptionResponse>(response, HttpStatus. CONFLICT);
     }
 	
 	@ExceptionHandler(DuplicateOrderIdException.class)
@@ -128,8 +152,14 @@ public class GlobalExceptionHandler  {
 	}
 	
 	@ExceptionHandler(NoSuchDriverIDException.class)
-	public ResponseEntity<String> NoSuchRestaurantIDException(NoSuchDriverIDException e){
-		return new ResponseEntity<String>("Restaurant ID not found", HttpStatus.NOT_FOUND);
+	public ResponseEntity<ExceptionResponse> NoSuchRestaurantIDException(NoSuchDriverIDException e){
+		ExceptionResponse response = new ExceptionResponse();
+        
+        response.setErrorCode("NOT_FOUND");
+        response.setErrorMessage(e.getMessage());
+        response.setTimestamp(LocalDateTime.now());
+        
+        return new ResponseEntity<ExceptionResponse>(response, HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)

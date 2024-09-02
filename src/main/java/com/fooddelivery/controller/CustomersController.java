@@ -24,6 +24,8 @@ import com.fooddelivery.entity.Restaurants;
 import com.fooddelivery.service.CustomersService;
 import com.fooddelivery.service.RestaurantsService;
 
+import jakarta.validation.Valid;
+
 
 @RestController
 @RequestMapping("/api/customers")
@@ -51,7 +53,7 @@ public class CustomersController {
 	}
 
 	@PostMapping("/")
-	public String addCustomer(@RequestBody Customers customer) {
+	public String addCustomer(@RequestBody @Valid Customers customer) {
 		try {
 			if (customersService.getCustomerById(customer.getCustomer_id()) != null) {
 				throw new DuplicateCustomerIDException("Customer with ID " + customer.getCustomer_id() + " already exists");
@@ -64,7 +66,7 @@ public class CustomersController {
 	}
 
 	@PutMapping("/{customer_id}")
-	public ResponseEntity<Customers> updateCustomerById(@PathVariable("customer_id") int customer_id, @RequestBody Customers updatedCustomer) {
+	public ResponseEntity<Customers> updateCustomerById(@PathVariable("customer_id") int customer_id, @RequestBody @Valid Customers updatedCustomer) {
 		Customers customer = customersService.getCustomerById(customer_id);
 		
 		if (customer == null) {
@@ -99,6 +101,18 @@ public class CustomersController {
 		return new ResponseEntity<List<Ratings>>(customersService.getAllRatingsByCustomerId(customerId), HttpStatus.OK); 
 	}
 	
+	@GetMapping("/{customer_id}/favouriteRestaurant/")
+	public ResponseEntity<?> getAllFavoriteRestaurants(@PathVariable("customer_id") int customerId){
+		Customers customer = customersService.getCustomerById(customerId);
+		if (customer == null) {
+			throw new CustomerNotFoundException(" with ID: " + customerId);
+		}
+		if(customersService.getAllFavoriteRestaurants(customerId).isEmpty()) {
+			return new ResponseEntity<String>("no favorite restauranst for "+customerId, HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<Set<Restaurants>>(customersService.getAllFavoriteRestaurants(customerId), HttpStatus.FOUND);
+	}
+	
 	@PostMapping("/{customer_id}/favouriteRestaurant/{restaurant_id}")
 	public ResponseEntity<String> addFavoriteRestaurant(@PathVariable("customer_id") int customerId,@PathVariable("restaurant_id") int restaurantId)
 			throws InvalidRestaurantIdException{
@@ -131,17 +145,5 @@ public class CustomersController {
 		customersService.deleteFavoriteRestaurant(customerId, restaurantId);
 		
 		return new ResponseEntity<String>("restaurant "+restaurantId+" successfully removed favorite restaurant for "+customerId, HttpStatus.OK);
-	}
-	
-	@GetMapping("/{customer_id}/favouriteRestaurant/")
-	public ResponseEntity<?> getAllFavoriteRestaurants(@PathVariable("customer_id") int customerId){
-		Customers customer = customersService.getCustomerById(customerId);
-		if (customer == null) {
-			throw new CustomerNotFoundException(" with ID: " + customerId);
-		}
-		if(customersService.getAllFavoriteRestaurants(customerId).isEmpty()) {
-			return new ResponseEntity<String>("no favorite restauranst for "+customerId, HttpStatus.NOT_FOUND);
-		}
-		return new ResponseEntity<Set<Restaurants>>(customersService.getAllFavoriteRestaurants(customerId), HttpStatus.FOUND);
 	}
 }

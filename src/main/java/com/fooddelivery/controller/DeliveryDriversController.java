@@ -7,12 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fooddelivery.Exception.DuplicateDriverIDException;
 import com.fooddelivery.Exception.InvalidDriverIDException;
 import com.fooddelivery.entity.DeliveryDrivers;
 import com.fooddelivery.entity.Orders;
@@ -41,16 +38,6 @@ public class DeliveryDriversController {
             return new ResponseEntity<>(driver, HttpStatus.OK);
         } catch (InvalidDriverIDException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
-    }
-	
-    @PutMapping("/{driverId}")
-    public ResponseEntity<String> updateDeliveryDrivers(@PathVariable("driverId") int driverId, @RequestBody DeliveryDrivers deliverydrivers) {
-        try {
-            String result = deliverydriversService.updateDeliveryDrivers(driverId, deliverydrivers);
-            return new ResponseEntity<String>(result, HttpStatus.OK);
-        } catch (DuplicateDriverIDException e) {
-        	return new ResponseEntity<String>(e.getMessage(), HttpStatus.CONFLICT);
         }
     }
     

@@ -18,6 +18,8 @@ import com.fooddelivery.Exception.InvalidRestaurantIdException;
 import com.fooddelivery.entity.MenuItems;
 import com.fooddelivery.service.MenuItemsService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/restaurants")
 public class MenuItemsController {
@@ -32,13 +34,11 @@ public class MenuItemsController {
 			return new ResponseEntity<List<MenuItems>>(menuItem, HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(e.getMessage() ,HttpStatus.NOT_FOUND);
-//			throw new InvalidRestaurantIdException("Restaurant with ID: "+restaurant_id+" does not exist!");
 		}
 	}
 
 	@PostMapping("/{restaurant_id}/menu")
-	public ResponseEntity<MenuItems> addmenuItemsByRestaurantId(@PathVariable("restaurant_id") int restaurant_id,
-			@RequestBody MenuItems menuItems) throws InvalidRestaurantIdException {
+	public ResponseEntity<MenuItems> addmenuItemsByRestaurantId(@PathVariable("restaurant_id") int restaurant_id, @RequestBody @Valid MenuItems menuItems) throws InvalidRestaurantIdException {
 		MenuItems savedItems = menuItemsService.addMenuItems(restaurant_id, menuItems);
 		if (savedItems == null) {
 			throw new InvalidRestaurantIdException("Restaurant Id is not found with Id: " + restaurant_id);
@@ -48,9 +48,7 @@ public class MenuItemsController {
 	}
 
 	@PutMapping("/{restaurant_id}/menu/{item_id}")
-	public ResponseEntity<MenuItems> updatemenuItems(@PathVariable("restaurant_id") int restaurant_id, @PathVariable("item_id") int item_id,
-			@RequestBody MenuItems menuItems) throws InvalidMenuItemException {
-
+	public ResponseEntity<MenuItems> updatemenuItems(@PathVariable("restaurant_id") int restaurant_id, @PathVariable("item_id") int item_id, @RequestBody @Valid MenuItems menuItems) throws InvalidMenuItemException {
 		if (menuItems.getItem_name() == null || menuItems.getItem_name().isEmpty()) {
 			throw new InvalidMenuItemException("Item Name cannot be empty");
 		}
@@ -64,9 +62,7 @@ public class MenuItemsController {
 	}
 
 	@DeleteMapping("/{restaurant_id}/menu/{item_id}")
-	public ResponseEntity<MenuItems> deletemenuItems(@PathVariable("restaurant_id") int restaurant_id, @PathVariable("item_id") int item_id)
-			throws InvalidItemIdException {
-
+	public ResponseEntity<MenuItems> deletemenuItems(@PathVariable("restaurant_id") int restaurant_id, @PathVariable("item_id") int item_id) throws InvalidItemIdException {
 		try {
 			menuItemsService.deleteMenuItems(restaurant_id, item_id);
 			return new ResponseEntity<MenuItems>(HttpStatus.NO_CONTENT);

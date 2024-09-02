@@ -20,6 +20,8 @@ import com.fooddelivery.Exception.NoSuchRestaurantIDException;
 import com.fooddelivery.entity.Restaurants;
 import com.fooddelivery.service.RestaurantsService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/restaurants")
 public class RestaurantsController {
@@ -33,7 +35,7 @@ public class RestaurantsController {
 	}
 	
 	@PutMapping("/{restaurant_id}")
-	ResponseEntity<Restaurants> updateRestaurants(@RequestBody Restaurants rest) throws InvalidRestaurantIdException {
+	ResponseEntity<Restaurants> updateRestaurants(@RequestBody @Valid Restaurants rest) throws InvalidRestaurantIdException {
 		Restaurants restaurants = restaurantsService.updateRestaurant(rest);
 		
 		if(rest.getRestaurant_id() <= 0) {
@@ -53,7 +55,7 @@ public class RestaurantsController {
 	}
  
 	@PostMapping("/")
-	public ResponseEntity<String> addRestaurant(@RequestBody Restaurants restaurant) throws DuplicateRestaurantIDException {
+	public ResponseEntity<String> addRestaurant(@RequestBody @Valid Restaurants restaurant) throws DuplicateRestaurantIDException {
 			try {
 				Restaurants addedRestaurant = restaurantsService.addRestaurant(restaurant);
 				return new ResponseEntity<String>(addedRestaurant.toString(), HttpStatus.OK);

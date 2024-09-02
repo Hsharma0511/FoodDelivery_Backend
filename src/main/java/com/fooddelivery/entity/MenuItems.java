@@ -31,7 +31,6 @@ public class MenuItems {
     private String item_description;
 	
 	@Column(name="ITEM_PRICE")
-	@NotEmpty(message="Item price cannot be empty")
 	@DecimalMin(value="0.0", inclusive=false, message="Item price must be greater than zero")
     private float item_price;
     

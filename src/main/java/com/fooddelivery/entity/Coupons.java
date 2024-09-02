@@ -4,24 +4,34 @@ import java.sql.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name="COUPONS")
 public class Coupons {
-	
 	@Id
 	@Column(name="COUPON_ID")
+	@GeneratedValue(strategy=GenerationType.SEQUENCE)
 	private int coupon_id;
 	
 	@Column(name="COUPON_CODE")
+	@NotEmpty(message="Coupon code cannot be empty")
+    @Size(max=20, message="Coupon code must be less than or equal to 20 characters")
 	private String coupon_code;
 	
 	@Column(name="DISCOUNT_AMOUNT")
+	@NotEmpty(message="Discount amount cannot be empty")
+    @Positive(message="Discount amount must be positive")
 	private double discount_amount;
 	
 	@Column(name="EXPIRY_DATE")
+	@NotEmpty(message="Expiry date cannot be empty")
 	private Date expiry_date;
 	
 	public Coupons() {}

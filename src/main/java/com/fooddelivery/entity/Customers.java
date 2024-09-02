@@ -29,7 +29,7 @@ public class Customers {
     
     @Column(name="CUSTOMER_NAME")
     @NotEmpty(message="Customer name cannot be empty")
-    @Size(max = 50, message = "Customer name must be less than or equal to 50 characters")
+    @Size(max=50, message="Customer name must be less than or equal to 50 characters")
     private String customer_name;
     
     @Column(name="CUSTOMER_EMAIL")

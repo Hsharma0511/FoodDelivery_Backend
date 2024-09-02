@@ -6,14 +6,10 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fooddelivery.Exception.DuplicateDriverIDException;
 import com.fooddelivery.Exception.InvalidDriverIDException;
 import com.fooddelivery.Exception.NoSuchDriverIDException;
 import com.fooddelivery.Repository.DeliveryDriversRepository;
 import com.fooddelivery.entity.DeliveryDrivers;
-import com.fooddelivery.entity.Orders;
-
-import jakarta.transaction.Transactional;
 
 @Service
 public class DeliveryDriversServiceImpl implements DeliveryDriversService {
@@ -45,17 +41,5 @@ public class DeliveryDriversServiceImpl implements DeliveryDriversService {
         } catch(NumberFormatException e) {
         	throw new InvalidDriverIDException("Invalid driver ID format: " + driverIdString);
         }
-	}
- 
-	@Override
-	@Transactional
-	public String updateDeliveryDrivers(int driverId, DeliveryDrivers deliverydetails) throws DuplicateDriverIDException {
-        
-        Optional<DeliveryDrivers> opt = deliverydriversRepository.findById(driverId);
-        
-        if(opt.isPresent()) {
-            throw new DuplicateDriverIDException("Driver with ID " + driverId + " already exists.");
-        }
-        return "Driver with ID " + driverId + " updated successfully";
 	}
 }

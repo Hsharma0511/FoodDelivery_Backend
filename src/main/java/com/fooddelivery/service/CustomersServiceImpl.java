@@ -21,10 +21,13 @@ import com.fooddelivery.entity.Restaurants;
 public class CustomersServiceImpl implements CustomersService {
 	@Autowired
 	private CustomersRepository customersRepository;
+	
 	@Autowired
 	private OrdersRepository ordersRepository;
+	
 	@Autowired
 	private RatingsRepository ratingsRepository;
+	
 	@Autowired
 	private RestaurantsRepository restaurantsRepository;
  

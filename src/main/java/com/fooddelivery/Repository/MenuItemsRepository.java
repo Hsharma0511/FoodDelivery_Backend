@@ -14,6 +14,7 @@ import com.fooddelivery.entity.MenuItems;
 public interface MenuItemsRepository extends JpaRepository<MenuItems,Integer> {
     @Query("SELECT mi FROM MenuItems mi WHERE mi.restaurants.restaurant_id=:restaurant_id")
 	List<MenuItems> findByRestaurantId(@Param("restaurant_id")int restaurant_id);
+    
     @Query("SELECT mi FROM MenuItems mi WHERE mi.id = :item_id AND mi.restaurants.restaurant_id = :restaurant_id")
 	MenuItems findByIdAndRestaurantId(int item_id, int restaurant_id);
  
