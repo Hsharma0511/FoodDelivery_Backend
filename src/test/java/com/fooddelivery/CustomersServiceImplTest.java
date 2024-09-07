@@ -5,10 +5,10 @@ import com.fooddelivery.Exception.DuplicateCustomerIDException;
 import com.fooddelivery.Repository.CustomersRepository;
 import com.fooddelivery.Repository.OrdersRepository;
 import com.fooddelivery.Repository.RatingsRepository;
+import com.fooddelivery.dto.Role;
 import com.fooddelivery.entity.Customers;
 import com.fooddelivery.entity.Orders;
 import com.fooddelivery.entity.Ratings;
-import com.fooddelivery.service.CustomersService;
 import com.fooddelivery.service.CustomersServiceImpl;
 
 import org.junit.jupiter.api.Test;
@@ -51,7 +51,7 @@ public class CustomersServiceImplTest {
 
     @Test
     public void testGetAllCustomers_Success() {
-        Customers customer = new Customers(1, "John Smith", "john@example.com", "+1234567890");
+        Customers customer = new Customers(1, "John Smith", "john@example.com", "+1234567890", "123456", Role.customer);
         List<Customers> customers = List.of(customer);
         
         Mockito.when(customersRepository.findAll()).thenReturn(customers);
@@ -64,7 +64,7 @@ public class CustomersServiceImplTest {
 
     @Test
     public void testAddCustomer_DuplicateCustomerId() {
-        Customers customer = new Customers(1, "John Smith", "john@example.com", "+1234567890");
+        Customers customer = new Customers(1, "John Smith", "john@example.com", "+1234567890", "123456", Role.customer);
         Mockito.when(customersRepository.findById(1)).thenReturn(Optional.of(customer));
         
         Exception exception = assertThrows(DuplicateCustomerIDException.class, () -> {
@@ -76,7 +76,7 @@ public class CustomersServiceImplTest {
 
     @Test
     public void testAddCustomer_Success() throws DuplicateCustomerIDException {
-        Customers customer = new Customers(1, "John Smith", "john@example.com", "+1234567890");
+        Customers customer = new Customers(1, "John Smith", "john@example.com", "+1234567890", "123456", Role.customer);
         Mockito.when(customersRepository.findById(1)).thenReturn(Optional.empty());
         Mockito.when(customersRepository.save(customer)).thenReturn(customer);
         
@@ -87,7 +87,7 @@ public class CustomersServiceImplTest {
 
     @Test
     public void testGetCustomerById_Found() {
-        Customers customer = new Customers(1, "John Smith", "john@example.com", "+1234567890");
+        Customers customer = new Customers(1, "John Smith", "john@example.com", "+1234567890", "123456", Role.customer);
         Mockito.when(customersRepository.findById(1)).thenReturn(Optional.of(customer));
         
         Customers result = customersService.getCustomerById(1);
@@ -105,7 +105,7 @@ public class CustomersServiceImplTest {
 
     @Test
     public void testUpdateCustomer() {
-        Customers customer = new Customers(1, "John Smith", "john@example.com", "1234567890");
+        Customers customer = new Customers(1, "John Smith", "john@example.com", "1234567890", "123456", Role.customer);
         Mockito.when(customersRepository.save(customer)).thenReturn(customer);
         
         Customers result = customersService.updateCustomer(customer);
@@ -115,7 +115,7 @@ public class CustomersServiceImplTest {
 
     @Test
     public void testDeleteCustomerById_Found() {
-        Customers customer = new Customers(1, "John Smith", "john@example.com", "1234567890");
+        Customers customer = new Customers(1, "John Smith", "john@example.com", "1234567890", "123456", Role.customer);
         Mockito.when(customersRepository.findById(1)).thenReturn(Optional.of(customer));
         
         boolean result = customersService.deleteCustomerById(1);

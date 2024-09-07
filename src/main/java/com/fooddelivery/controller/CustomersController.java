@@ -5,6 +5,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,12 +30,13 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/customers")
+@CrossOrigin(origins = "http://localhost:4200/")
 public class CustomersController {
 	@Autowired
 	private CustomersService customersService;
 	
 	@Autowired
-	RestaurantsService restaurantsService;
+	private RestaurantsService restaurantsService;
 
 	@GetMapping("/")
 	public ResponseEntity<List<Customers>> getAllCustomers() {
@@ -51,6 +53,8 @@ public class CustomersController {
 		}
 		return new ResponseEntity<Customers>(customer, HttpStatus.OK);
 	}
+	
+	
 
 	@PostMapping("/")
 	public ResponseEntity<Customers> addCustomer(@RequestBody @Valid Customers customer) {
@@ -58,7 +62,7 @@ public class CustomersController {
 			if (customersService.getCustomerById(customer.getCustomer_id()) != null) {
 				throw new DuplicateCustomerIDException("Customer with ID " + customer.getCustomer_id() + " already exists");
 			}
-			return new ResponseEntity<Customers>( customersService.addCustomer(customer), HttpStatus.OK);
+			return new ResponseEntity<Customers>(customersService.addCustomer(customer), HttpStatus.OK);
 		} catch (DuplicateCustomerIDException e) {
 			return new ResponseEntity<Customers>(HttpStatus.CONFLICT);
 		}
@@ -88,6 +92,11 @@ public class CustomersController {
 			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<String>("Customer deleted successfully", HttpStatus.NO_CONTENT);
+	}
+	
+	@GetMapping("/email/{customer_email}")
+	private ResponseEntity<Customers> getUserByEmail(@PathVariable("customer_email") String customer_email) {
+		return new ResponseEntity<Customers>(customersService.getCustomerByEmail(customer_email), HttpStatus.OK);
 	}
 	
 	@GetMapping("/{customer_id}/orders")

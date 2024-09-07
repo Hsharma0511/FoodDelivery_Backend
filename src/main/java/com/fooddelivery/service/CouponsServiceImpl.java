@@ -13,7 +13,7 @@ import com.fooddelivery.entity.Coupons;
 public class CouponsServiceImpl implements CouponsService{
 
 	@Autowired
-	CouponsRepository couponsRepository;
+	private CouponsRepository couponsRepository;
 	
 	@Override
 	public List<Coupons> getAllCoupons() throws CouponNotFoundException {

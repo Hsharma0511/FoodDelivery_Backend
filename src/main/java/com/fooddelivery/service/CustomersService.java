@@ -14,6 +14,7 @@ public interface CustomersService {
   List<Customers> getAllCustomers();
   Customers addCustomer(Customers customer) throws DuplicateCustomerIDException;
   Customers getCustomerById(int customer_id);
+  Customers getCustomerByEmail(String customer_email);
   Customers updateCustomer(Customers customer);
   boolean deleteCustomerById(int customer_id);
   List<Orders> getOrdersByCustomerId(int customer_id);
@@ -21,4 +22,4 @@ public interface CustomersService {
   void addFavoriteRestaurant(int customerId, int restaurantId);
   void deleteFavoriteRestaurant(int customerId, int restaurantId);
   Set<Restaurants> getAllFavoriteRestaurants(int customerId);
-}	
+}

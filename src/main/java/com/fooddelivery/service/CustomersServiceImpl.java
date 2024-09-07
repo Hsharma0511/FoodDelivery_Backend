@@ -43,6 +43,7 @@ public class CustomersServiceImpl implements CustomersService {
 	@Override
 	public Customers addCustomer(Customers customer) throws DuplicateCustomerIDException {
 	    Optional<Customers> existingCustomer = customersRepository.findById(customer.getCustomer_id());
+	    
 	    if(existingCustomer.isPresent()) {
 	    	throw new DuplicateCustomerIDException("Customer with Id " + customer.getCustomer_id() + " already exists");
 	    } else {
@@ -113,5 +114,10 @@ public class CustomersServiceImpl implements CustomersService {
 	@Override
 	public Set<Restaurants> getAllFavoriteRestaurants(int customerId) {
 		return customersRepository.getAllFavotiteRestaurants(customerId);
+	}
+
+	@Override
+	public Customers getCustomerByEmail(String customer_email) {
+		return customersRepository.getCustomerByEmail(customer_email);
 	}
 }
