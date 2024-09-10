@@ -9,6 +9,6 @@ public interface RestaurantsService {
 	 List<Restaurants> getAllRestaurants();
 	 Restaurants updateRestaurant(Restaurants restaurant) throws InvalidRestaurantIdException;
 	 public Restaurants getRestaurantById(int restaurantId);
-	 void deleteRestaurantById(int restaurantId) throws InvalidRestaurantIdException;
+	 boolean deleteRestaurantById(int restaurantId);
      public Restaurants addRestaurant(Restaurants restaurants);
 }

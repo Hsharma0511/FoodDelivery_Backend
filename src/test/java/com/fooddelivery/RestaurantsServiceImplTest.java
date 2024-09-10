@@ -27,6 +27,10 @@ public class RestaurantsServiceImplTest {
     @Mock
     private RestaurantsRepository restaurantsRepository;
 
+    /**
+     * Test to verify that the `getAllRestaurants` method returns all restaurants from the repository.
+     * It checks that the method does not return an empty list and correctly retrieves restaurant details.
+     */
     @Test
     public void testGetAllRestaurants() {
         Restaurants restaurant = new Restaurants(1, "Tasty Bites", "123 Main St", "+1234567890");
@@ -39,6 +43,10 @@ public class RestaurantsServiceImplTest {
         assertEquals("Tasty Bites", result.get(0).getRestaurant_name());
     }
 
+    /**
+     * Test to verify that the `updateRestaurant` method successfully updates a restaurant's details
+     * when a valid restaurant ID is provided. It checks that the restaurant's name is updated correctly.
+     */
     @Test
     public void testUpdateRestaurant_Success() throws InvalidRestaurantIdException {
         Restaurants existingRestaurant = new Restaurants(1, "Tasty Bites", "123 Main St", "+1234567890");
@@ -52,6 +60,10 @@ public class RestaurantsServiceImplTest {
         assertEquals("Tasty Burgers", result.getRestaurant_name());
     }
 
+    /**
+     * Test to verify that an `InvalidRestaurantIdException` is thrown when trying to update a restaurant
+     * with an invalid (non-existent) ID. It checks that the exception is correctly thrown when the restaurant ID is not found.
+     */
     @Test
     public void testUpdateRestaurant_InvalidId() {
         Restaurants restaurant = new Restaurants(1, "Tasty Bites", "123 Main St", "+1234567890");
@@ -62,6 +74,10 @@ public class RestaurantsServiceImplTest {
         });
     }
 
+    /**
+     * Test to verify that the `getRestaurantById` method correctly retrieves a restaurant by its ID when
+     * the restaurant exists in the repository. It checks that the retrieved restaurant has the correct name.
+     */
     @Test
     public void testGetRestaurantById_Found() throws NoSuchRestaurantIDException {
         Restaurants restaurant = new Restaurants(1, "Tasty Bites", "123 Main St", "+1234567890");
@@ -72,6 +88,10 @@ public class RestaurantsServiceImplTest {
         assertEquals("Tasty Bites", result.getRestaurant_name());
     }
 
+    /**
+     * Test to verify that a `NoSuchRestaurantIDException` is thrown when trying to retrieve a restaurant
+     * by an ID that does not exist in the repository. It checks that the exception is thrown as expected.
+     */
     @Test
     public void testGetRestaurantById_NotFound() {
         Mockito.when(restaurantsRepository.findById(1)).thenReturn(Optional.empty());
@@ -81,6 +101,10 @@ public class RestaurantsServiceImplTest {
         });
     }
 
+    /**
+     * Test to verify that the `deleteRestaurantById` method successfully deletes a restaurant when a valid ID is provided.
+     * It checks that the `deleteById` method of the repository is called once.
+     */
     @Test
     public void testDeleteRestaurantById_Success() throws InvalidRestaurantIdException {
         Mockito.when(restaurantsRepository.existsById(1)).thenReturn(true);
@@ -89,6 +113,10 @@ public class RestaurantsServiceImplTest {
         Mockito.verify(restaurantsRepository, Mockito.times(1)).deleteById(1);
     }
 
+    /**
+     * Test to verify that an `InvalidRestaurantIdException` is thrown when trying to delete a restaurant
+     * with an invalid (non-existent) ID. It checks that the exception is thrown when the ID does not exist in the repository.
+     */
     @Test
     public void testDeleteRestaurantById_InvalidId() {
         Mockito.when(restaurantsRepository.existsById(1)).thenReturn(false);
@@ -98,6 +126,10 @@ public class RestaurantsServiceImplTest {
         });
     }
 
+    /**
+     * Test to verify that the `addRestaurant` method successfully adds a new restaurant when the restaurant ID is unique.
+     * It checks that the restaurant is saved correctly in the repository.
+     */
     @Test
     public void testAddRestaurant_Success() {
         Restaurants restaurant = new Restaurants(1, "Tasty Bites", "123 Main St", "+1234567890");
@@ -109,6 +141,10 @@ public class RestaurantsServiceImplTest {
         assertEquals("Tasty Bites", result.getRestaurant_name());
     }
 
+    /**
+     * Test to verify that a `DuplicateRestaurantIDException` is thrown when trying to add a restaurant
+     * with an ID that already exists in the repository. It checks that the exception is thrown as expected.
+     */
     @Test
     public void testAddRestaurant_DuplicateId() {
         Restaurants restaurant = new Restaurants(1, "Tasty Bites", "123 Main St", "+1234567890");

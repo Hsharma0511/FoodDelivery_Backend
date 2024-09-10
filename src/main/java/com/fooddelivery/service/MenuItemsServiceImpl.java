@@ -23,6 +23,30 @@ public class MenuItemsServiceImpl implements MenuItemsService {
 	@Autowired
 	private MenuItemsRepository menuItemsRepository;
 	
+	/**
+     * Retrieves a menu item by its ID.
+     * 
+     * @param menuItem_id The ID of the menu item to retrieve.
+     * @return The menu item if found.
+     * @throws InvalidItemIdException if the menu item with the given ID does not exist.
+     */
+	@Override
+	public MenuItems getMenuByItemId(int menuItem_id) throws InvalidItemIdException {
+		Optional<MenuItems> menuItem = menuItemsRepository.findById(menuItem_id);
+		
+		if(menuItem.isEmpty()) {
+			throw new InvalidItemIdException("Menu Item with ID: "+menuItem_id+" does not exist!");
+		}
+		return menuItem.get();
+	}
+	
+	/**
+     * Retrieves all menu items for a given restaurant.
+     * 
+     * @param restaurant_id The ID of the restaurant whose menu items are to be retrieved.
+     * @return A list of menu items for the given restaurant.
+     * @throws InvalidRestaurantIdException if the restaurant with the given ID does not exist.
+     */
 	@Override
 	public List<MenuItems> getMenuItemsByRestaurantId(int restaurant_id) throws InvalidRestaurantIdException{
 		if(menuItemsRepository.findByRestaurantId(restaurant_id).isEmpty()) {
@@ -31,6 +55,14 @@ public class MenuItemsServiceImpl implements MenuItemsService {
 		return menuItemsRepository.findByRestaurantId(restaurant_id);
 	}
 	
+	/**
+     * Adds a new menu item to a restaurant.
+     * 
+     * @param restaurant_id The ID of the restaurant to which the menu item will be added.
+     * @param menuItems The menu item to add.
+     * @return The added menu item.
+     * @throws InvalidRestaurantIdException if the restaurant with the given ID does not exist.
+     */
 	@Override
 	public MenuItems addMenuItems(int restaurant_id, MenuItems menuItems) throws InvalidRestaurantIdException {
 		Optional<Restaurants> restaurant = restaurantsRepository.findById(restaurant_id);
@@ -41,8 +73,17 @@ public class MenuItemsServiceImpl implements MenuItemsService {
 		
 		menuItems.setRestaurants(restaurant.get());
 		return menuItemsRepository.save(menuItems);
-  }
+	}
 
+	/**
+     * Updates an existing menu item.
+     * 
+     * @param restaurant_id The ID of the restaurant that owns the menu item.
+     * @param item_id The ID of the menu item to update.
+     * @param menuItems The updated menu item details.
+     * @return The updated menu item.
+     * @throws InvalidMenuItemException if the menu item details are invalid.
+     */
 	@Override
 	public MenuItems updateMenuItems(int restaurant_id, int item_id , MenuItems menuItems) throws InvalidMenuItemException {
 		if(menuItems.getItem_name() == null || menuItems.getItem_name().isEmpty()) {
@@ -60,6 +101,13 @@ public class MenuItemsServiceImpl implements MenuItemsService {
 		return menuItemsRepository.save(updatedItems);
 	}
  
+	/**
+     * Deletes a menu item from a restaurant.
+     * 
+     * @param restaurant_id The ID of the restaurant that owns the menu item.
+     * @param item_id The ID of the menu item to delete.
+     * @throws InvalidItemIdException if the menu item or restaurant with the given ID does not exist.
+     */
 	@Override
 	@Transactional
 	public void deleteMenuItems(int restaurant_id, int item_id) throws InvalidItemIdException {

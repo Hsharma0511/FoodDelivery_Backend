@@ -16,6 +16,12 @@ public class DeliveryDriversServiceImpl implements DeliveryDriversService {
 	@Autowired
 	private DeliveryDriversRepository deliverydriversRepository;
 	
+	/**
+     * Retrieves all delivery drivers from the database.
+     * 
+     * @return A list of all delivery drivers.
+     * @throws NoSuchDriverIDException if no drivers are found in the database.
+     */
 	@Override
 	public List<DeliveryDrivers> getAllDeliveryDrivers() throws NoSuchDriverIDException {
         List<DeliveryDrivers> drivers = deliverydriversRepository.findAll();
@@ -26,6 +32,13 @@ public class DeliveryDriversServiceImpl implements DeliveryDriversService {
         return drivers;
     }
  
+	/**
+     * Retrieves a delivery driver by their ID.
+     * 
+     * @param driverId The ID of the driver to retrieve.
+     * @return The delivery driver entity if found.
+     * @throws InvalidDriverIDException if the driver ID is invalid or the driver is not found.
+     */
 	@Override
 	public DeliveryDrivers getDeliveryDriversById(int driverId) throws InvalidDriverIDException {
         String driverIdString = String.valueOf(driverId);

@@ -6,9 +6,8 @@ import java.util.Set;
 import com.fooddelivery.Exception.DuplicateCustomerIDException;
 import com.fooddelivery.entity.Customers;
 import com.fooddelivery.entity.Orders;
-import com.fooddelivery.entity.Ratings;
 import com.fooddelivery.entity.Restaurants;
- 
+
 
 public interface CustomersService {
   List<Customers> getAllCustomers();
@@ -18,7 +17,6 @@ public interface CustomersService {
   Customers updateCustomer(Customers customer);
   boolean deleteCustomerById(int customer_id);
   List<Orders> getOrdersByCustomerId(int customer_id);
-  List<Ratings> getAllRatingsByCustomerId(int customer_id);
   void addFavoriteRestaurant(int customerId, int restaurantId);
   void deleteFavoriteRestaurant(int customerId, int restaurantId);
   Set<Restaurants> getAllFavoriteRestaurants(int customerId);

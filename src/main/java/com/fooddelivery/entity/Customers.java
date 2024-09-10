@@ -34,7 +34,7 @@ public class Customers {
     @Size(max=50, message="Customer name must be less than or equal to 50 characters")
     private String customer_name;
     
-    @Column(name="CUSTOMER_EMAIL")
+    @Column(name="CUSTOMER_EMAIL", unique=true)
     @NotEmpty(message="Customer email cannot be empty")
     @Email(message="Customer email should be valid")
     private String customer_email;

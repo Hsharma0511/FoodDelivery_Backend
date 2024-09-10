@@ -30,22 +30,48 @@ public class RestaurantsController {
 	@Autowired
 	private RestaurantsService restaurantsService;
 	
+	/**
+     * Endpoint to retrieve all restaurants.
+     * 
+     * @return ResponseEntity containing a list of all restaurants and HTTP status 200 OK.
+     */
 	@GetMapping("/")
 	public ResponseEntity<List<Restaurants>> getAllRestaurants() {
 		List<Restaurants> restaurants = restaurantsService.getAllRestaurants();
 		return new ResponseEntity<List<Restaurants>>(restaurants, HttpStatus.OK);
 	}
 	
+	/**
+     * Endpoint to update details of a specific restaurant.
+     * 
+     * @param restaurant_id The ID of the restaurant to be updated.
+     * @param rest The updated restaurant information.
+     * @return ResponseEntity with the updated restaurant and HTTP status 202 ACCEPTED, or HTTP status 404 NOT FOUND if the restaurant does not exist.
+     * @throws InvalidRestaurantIdException If the restaurant ID is invalid or not found.
+     */
 	@PutMapping("/{restaurant_id}")
-	ResponseEntity<Restaurants> updateRestaurants(@RequestBody @Valid Restaurants rest) throws InvalidRestaurantIdException {
-		Restaurants restaurants = restaurantsService.updateRestaurant(rest);
+	ResponseEntity<Restaurants> updateRestaurants(@PathVariable("restaurant_id") int restaurant_id, @RequestBody @Valid Restaurants rest) throws InvalidRestaurantIdException {
+		System.out.println(restaurant_id);
+		Restaurants restaurant = restaurantsService.getRestaurantById(restaurant_id);
 		
-		if(rest.getRestaurant_id() <= 0) {
-			throw new InvalidRestaurantIdException("Invalid restaurant ID: "+rest.getRestaurant_id());
+		if (restaurant == null) {
+			return new ResponseEntity<Restaurants>(HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<Restaurants>(restaurants, HttpStatus.ACCEPTED);
+		
+		restaurant.setRestaurant_name(rest.getRestaurant_name());
+		restaurant.setRestaurant_address(rest.getRestaurant_address());
+		restaurant.setRestaurant_phone(rest.getRestaurant_phone());
+		Restaurants savedRestaurant = restaurantsService.updateRestaurant(restaurant);
+		
+		return new ResponseEntity<Restaurants>(savedRestaurant, HttpStatus.ACCEPTED);
 	}
 	
+	/**
+     * Endpoint to retrieve a specific restaurant by its ID.
+     * 
+     * @param restaurantId The ID of the restaurant to be retrieved.
+     * @return ResponseEntity with the restaurant information and HTTP status 200 OK, or an error message with HTTP status 404 NOT FOUND if the restaurant does not exist.
+     */
 	@GetMapping("/{restaurantId}")
 	public ResponseEntity<?> getRestaurantsById(@PathVariable("restaurantId") int restaurantId) {
 		try {
@@ -56,6 +82,13 @@ public class RestaurantsController {
 		}
 	}
  
+	/**
+     * Endpoint to add a new restaurant.
+     * 
+     * @param restaurant The restaurant information to be added.
+     * @return ResponseEntity with the added restaurant and HTTP status 200 OK, or an error message with HTTP status 400 BAD REQUEST if a restaurant with the same ID already exists.
+     * @throws DuplicateRestaurantIDException If a restaurant with the same ID already exists.
+     */
 	@PostMapping("/")
 	public ResponseEntity<?> addRestaurant(@RequestBody @Valid Restaurants restaurant) throws DuplicateRestaurantIDException {
 			try {
@@ -66,9 +99,20 @@ public class RestaurantsController {
 			}
 	}
 	
+	/**
+     * Endpoint to delete a specific restaurant by its ID.
+     * 
+     * @param restaurantId The ID of the restaurant to be deleted.
+     * @return ResponseEntity with a success message and HTTP status 204 NO CONTENT if the restaurant was successfully deleted, or HTTP status 404 NOT FOUND if the restaurant does not exist.
+     */
 	@DeleteMapping("/{restaurantId}")
-	public ResponseEntity<Void> deleteRestaurantsById(@PathVariable("restaurantId") int restaurantId) throws InvalidRestaurantIdException {
-		restaurantsService.deleteRestaurantById(restaurantId);
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+	public ResponseEntity<String> deleteRestaurantsById(@PathVariable("restaurantId") int restaurantId) {
+
+		boolean deleted = restaurantsService.deleteRestaurantById(restaurantId);
+		
+		if(!deleted) {
+			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<String>("Restaurant deleted successfully", HttpStatus.NO_CONTENT);
 	}
 }

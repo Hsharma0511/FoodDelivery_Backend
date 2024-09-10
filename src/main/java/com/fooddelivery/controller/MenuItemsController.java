@@ -27,7 +27,31 @@ import jakarta.validation.Valid;
 public class MenuItemsController {
 	@Autowired
 	private MenuItemsService menuItemsService;
-
+	
+	/**
+     * Endpoint to retrieve a specific menu item by its ID.
+     * 
+     * @param item_id The ID of the menu item to retrieve.
+     * @return ResponseEntity containing the MenuItems object or HTTP status 404 NOT FOUND if the item does not exist.
+     * @throws InvalidItemIdException If the item ID is invalid.
+     */
+	@GetMapping("/menuitem/{item_id}")
+	public ResponseEntity<MenuItems> getMenuByItemId(@PathVariable("item_id") int item_id) throws InvalidItemIdException {
+		try {
+			MenuItems menuItem = menuItemsService.getMenuByItemId(item_id);
+			return new ResponseEntity<MenuItems>(menuItem, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<MenuItems>(HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	/**
+     * Endpoint to retrieve all menu items for a specific restaurant.
+     * 
+     * @param restaurant_id The ID of the restaurant whose menu items are to be retrieved.
+     * @return ResponseEntity containing a list of MenuItems or HTTP status 404 NOT FOUND if the restaurant does not exist.
+     * @throws InvalidRestaurantIdException If the restaurant ID is invalid.
+     */
 	@GetMapping("/{restaurant_id}/menu")
 	public ResponseEntity<?> getMenuItemsByRestaurantId(@PathVariable("restaurant_id") int restaurant_id) throws InvalidRestaurantIdException {
 		try {
@@ -38,6 +62,14 @@ public class MenuItemsController {
 		}
 	}
 
+	/**
+     * Endpoint to add a new menu item to a specific restaurant's menu.
+     * 
+     * @param restaurant_id The ID of the restaurant where the new menu item will be added.
+     * @param menuItems The MenuItems object to be added.
+     * @return ResponseEntity containing the added MenuItems object and HTTP status 201 CREATED.
+     * @throws InvalidRestaurantIdException If the restaurant ID is invalid.
+     */
 	@PostMapping("/{restaurant_id}/menu")
 	public ResponseEntity<MenuItems> addmenuItemsByRestaurantId(@PathVariable("restaurant_id") int restaurant_id, @RequestBody @Valid MenuItems menuItems) throws InvalidRestaurantIdException {
 		MenuItems savedItems = menuItemsService.addMenuItems(restaurant_id, menuItems);
@@ -48,6 +80,15 @@ public class MenuItemsController {
 
 	}
 
+	/**
+     * Endpoint to update an existing menu item for a specific restaurant.
+     * 
+     * @param restaurant_id The ID of the restaurant to which the menu item belongs.
+     * @param item_id The ID of the menu item to update.
+     * @param menuItems The MenuItems object with updated information.
+     * @return ResponseEntity containing the updated MenuItems object and HTTP status 200 OK.
+     * @throws InvalidMenuItemException If the menu item data is invalid.
+     */
 	@PutMapping("/{restaurant_id}/menu/{item_id}")
 	public ResponseEntity<MenuItems> updatemenuItems(@PathVariable("restaurant_id") int restaurant_id, @PathVariable("item_id") int item_id, @RequestBody @Valid MenuItems menuItems) throws InvalidMenuItemException {
 		if (menuItems.getItem_name() == null || menuItems.getItem_name().isEmpty()) {
@@ -62,6 +103,14 @@ public class MenuItemsController {
 		return new ResponseEntity<MenuItems>(updatedItems, HttpStatus.OK);
 	}
 
+	/**
+     * Endpoint to delete a menu item from a specific restaurant's menu.
+     * 
+     * @param restaurant_id The ID of the restaurant from which the menu item will be deleted.
+     * @param item_id The ID of the menu item to delete.
+     * @return ResponseEntity with HTTP status 204 NO CONTENT if the deletion is successful.
+     * @throws InvalidItemIdException If the item ID is invalid or not found.
+     */
 	@DeleteMapping("/{restaurant_id}/menu/{item_id}")
 	public ResponseEntity<MenuItems> deletemenuItems(@PathVariable("restaurant_id") int restaurant_id, @PathVariable("item_id") int item_id) throws InvalidItemIdException {
 		try {

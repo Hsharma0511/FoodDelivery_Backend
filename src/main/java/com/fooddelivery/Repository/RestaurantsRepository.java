@@ -7,5 +7,4 @@ import com.fooddelivery.entity.Restaurants;
 
 @Repository
 public interface RestaurantsRepository extends JpaRepository<Restaurants,Integer> {
-
 }

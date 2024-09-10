@@ -7,4 +7,5 @@ import com.fooddelivery.entity.Coupons;
 
 public interface CouponsService {
 	List<Coupons> getAllCoupons() throws CouponNotFoundException;
+	Coupons getCouponByCouponCode(String coupon_code);
 }

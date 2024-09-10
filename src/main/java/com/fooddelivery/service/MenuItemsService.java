@@ -8,6 +8,7 @@ import com.fooddelivery.Exception.InvalidRestaurantIdException;
 import com.fooddelivery.entity.MenuItems;
 
 public interface MenuItemsService {
+	MenuItems getMenuByItemId(int menuItem_id) throws InvalidItemIdException;
 	List<MenuItems> getMenuItemsByRestaurantId(int restaurant_id) throws InvalidRestaurantIdException;
     public MenuItems addMenuItems(int restaurant_id, MenuItems menuItems)throws InvalidRestaurantIdException;
  	public MenuItems updateMenuItems(int restaurant_id, int item_id, MenuItems menuItems)throws InvalidMenuItemException;

@@ -43,9 +43,15 @@ public class Orders {
     @JoinColumn(name="driver_id")
     private DeliveryDrivers deliveryDrivers;
     
-	public Orders(int order_id, Date order_date, String order_status) {
+    public Orders(int order_id, Date order_date, String order_status) {
 		super();
 		this.order_id = order_id;
+		this.order_date = order_date;
+		this.order_status = order_status;
+	}
+    
+	public Orders(Date order_date, String order_status) {
+		super();
 		this.order_date = order_date;
 		this.order_status = order_status;
 	}
