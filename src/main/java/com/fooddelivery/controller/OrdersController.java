@@ -121,7 +121,6 @@ public class OrdersController {
 		System.out.println("Order details fetched successfully");
 		return new ResponseEntity<List<Orders>>(orders, HttpStatus.OK);
 	}
-	
 	/**
 	 * Endpoint to update the status of a specific order.
 	 * 
