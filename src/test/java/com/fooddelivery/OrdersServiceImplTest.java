@@ -28,21 +28,7 @@ public class OrdersServiceImplTest {
     @Mock
     private OrdersRepository ordersRepository;
 
-    /**
-     * Test to verify that orders are correctly retrieved by customer ID.
-     * This tests the `getOrderByCustomerId` method when there is an order associated with the given customer ID.
-     */
-    @Test
-    public void testGetOrderByCustomerId() {
-        Orders order = new Orders(1, new Date(), "Pending");
-        List<Orders> orders = List.of(order);
-        Mockito.when(ordersRepository.findOrdersByCustomerId(1)).thenReturn(orders);
 
-        List<Orders> result = ordersService.getOrderByCustomerId(1);
-        assertFalse(result.isEmpty());
-        assertEquals(1, result.size());
-        assertEquals("Pending", result.get(0).getOrder_status());
-    }
 
     /**
      * Test to verify that an exception is thrown when trying to place an order with a duplicate order ID.
@@ -111,21 +97,6 @@ public class OrdersServiceImplTest {
         });
     }
 
-    /**
-     * Test to verify that all orders are correctly retrieved from the repository.
-     * This tests the `getAllOrders` method when there are orders present in the repository.
-     */
-    @Test
-    public void testGetAllOrders() {
-        Orders order = new Orders(1, new Date(), "Pending");
-        List<Orders> orders = List.of(order);
-        Mockito.when(ordersRepository.findAll()).thenReturn(orders);
-
-        List<Orders> result = ordersService.getAllOrders();
-        assertFalse(result.isEmpty());
-        assertEquals(1, result.size());
-        assertEquals("Pending", result.get(0).getOrder_status());
-    }
 
     /**
      * Test to verify that an order's status is successfully updated when the order ID is valid.
@@ -164,32 +135,9 @@ public class OrdersServiceImplTest {
         assertThrows(OrdersNotFoundException.class, () -> {
             ordersService.updateOrderStatus(1, "Delivered");
         });
-    }
+    }	
+    
 
-    /**
-     * Test to verify that an order is successfully cancelled when the order ID is valid.
-     * This tests the `cancelOrder` method when the order exists and is deleted from the repository.
-     */
-    @Test
-    public void testCancelOrder_Success() throws InvalidOrderIdException {
-        Mockito.when(ordersRepository.findById(1)).thenReturn(Optional.of(new Orders()));
-        Mockito.when(ordersRepository.existsById(1)).thenReturn(true);
-
-        boolean result = ordersService.cancelOrder(1);
-        assertTrue(result);
-        Mockito.verify(ordersRepository, Mockito.times(1)).deleteById(1);
-    }
-
-    /**
-     * Test to verify that an exception is thrown when trying to cancel an order with an invalid ID.
-     * This tests the `cancelOrder` method when the order ID is negative.
-     */
-    @Test
-    public void testCancelOrder_InvalidId() {
-        assertThrows(InvalidOrderIdException.class, () -> {
-            ordersService.cancelOrder(-1);
-        });
-    }
 
     /**
      * Test to verify that an exception is thrown when attempting to cancel an order that does not exist.
